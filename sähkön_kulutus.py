@@ -59,8 +59,8 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
                 paivan_tiedot = [""] + [sahkotunti[0]] + [0] * (len(sahkonkulutus[0])-1)
             current_date = sahkotunti[0]
             paivan_tiedot[0] = aseta_paiva(current_date.weekday())
-    #paivan_tiedot muuttujassa on 1 extra elementti listan alussa verrattuna sahkotunti muuttujaan joten i+1
         for i, obj in enumerate(sahkotunti[1:], start=1):
+            #paivan_tiedot muuttujassa on 1 extra elementti listan alussa verrattuna sahkotunti listaan joten i+1
             paivan_tiedot[i+1] += obj
     viikon_tiedot.append(paivan_tiedot)
 
