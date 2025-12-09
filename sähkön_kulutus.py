@@ -3,6 +3,15 @@
 
 from datetime import datetime
 
+VIIKONPAIVAT = {
+    0:"Maanantai",
+    1:"Tiistai",
+    2:"Keskiviikko",
+    3:"Torstai",
+    4:"Perjantai",
+    5:"Lauantai",
+    6:"Sunnuntai"
+}
 def muunna_sahkotiedot(sahkotunti: list):
     """muutetaan tiedot oikeisiin muotoon. Valmistellaan datetime myös oikeaaseen formaattiin."""
     a = sahkotunti[0].replace("T", " ")
@@ -23,23 +32,6 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
     Samana viikonpäivänä oleva data summataan ja lisätään viikonpäivät päivämäärän lisäksi.
     """
 
-    def aseta_paiva(paiva: int) -> str:
-        """muuntaa datetime.weekday() palauttaman integerin suomen kieliseksi päiväksi"""
-        if paiva == 0:
-            return "Maanantai"
-        if paiva == 1:
-            return "Tiistai"
-        if paiva == 2:
-            return "Keskiviikko"
-        if paiva == 3:
-            return "Torstai"
-        if paiva == 4:
-            return "Perjantai"
-        if paiva == 5:
-            return "Lauantai"
-        if paiva == 6:
-            return "Sunnuntai"
-
     sahkonkulutus = []
     with open(sahkotiedosto, "r", encoding="utf-8") as f:
         next(f)
@@ -52,13 +44,15 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
     viikon_tiedot = []
     #paivan_tiedot formaatti: Viikonpäivä, päivämäärä, k1,k2,k3, t1,t2,t3
     paivan_tiedot = [""] + [sahkonkulutus[0][0]] + [0] * (len(sahkonkulutus[0])-1)
+
     for sahkotunti in sahkonkulutus:
-        if current_date.date() != sahkotunti[0].date():
+        sahkotunnin_date = sahkotunti[0]
+        if current_date.date() != sahkotunnin_date.date():
             if paivan_tiedot[0] != "":
                 viikon_tiedot.append(paivan_tiedot)
-                paivan_tiedot = [""] + [sahkotunti[0]] + [0] * (len(sahkonkulutus[0])-1)
-            current_date = sahkotunti[0]
-            paivan_tiedot[0] = aseta_paiva(current_date.weekday())
+                paivan_tiedot = [""] + [sahkotunnin_date] + [0] * (len(sahkonkulutus[0])-1)
+            current_date = sahkotunnin_date
+            paivan_tiedot[0] = VIIKONPAIVAT[current_date.weekday()]
         for i, obj in enumerate(sahkotunti[1:], start=1):
             #paivan_tiedot listassa on 1 extra elementti listan alussa verrattuna sahkotunti listaan joten i+1
             paivan_tiedot[i+1] += obj
