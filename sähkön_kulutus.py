@@ -45,6 +45,7 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
     #paivan_tiedot formaatti: Viikonpäivä, päivämäärä, k1,k2,k3, t1,t2,t3
     paivan_tiedot = [""] + [sahkonkulutus[0][0]] + [0] * (len(sahkonkulutus[0])-1)
 
+    #refactoroin tämän kohdan vielä. 9.12
     for sahkotunti in sahkonkulutus:
         sahkotunnin_date = sahkotunti[0]
         if current_date.date() != sahkotunnin_date.date():
@@ -54,7 +55,6 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
             current_date = sahkotunnin_date
             paivan_tiedot[0] = VIIKONPAIVAT[current_date.weekday()]
         for i, obj in enumerate(sahkotunti[1:], start=1):
-            #paivan_tiedot listassa on 1 extra elementti listan alussa verrattuna sahkotunti listaan joten i+1
             paivan_tiedot[i+1] += obj
     viikon_tiedot.append(paivan_tiedot)
 
