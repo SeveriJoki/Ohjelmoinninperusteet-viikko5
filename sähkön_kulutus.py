@@ -40,36 +40,34 @@ def hae_sahkonkulutus(sahkotiedosto: str) -> list:
             sahkotunti = tiedot.split(';')
             sahkonkulutus.append(muunna_sahkotiedot(sahkotunti))
 
-    current_date = datetime.min
-    viikon_tiedot = []
-    #paivan_tiedot formaatti: Viikonpäivä, päivämäärä, k1,k2,k3, t1,t2,t3
-    paivan_tiedot = [""] + [sahkonkulutus[0][0]] + [0] * (len(sahkonkulutus[0])-1)
 
-    #refactoroin tämän kohdan vielä. 9.12
-    for sahkotunti in sahkonkulutus:
-        sahkotunnin_date = sahkotunti[0]
-        if current_date.date() != sahkotunnin_date.date():
-            if paivan_tiedot[0] != "":
-                viikon_tiedot.append(paivan_tiedot)
-                paivan_tiedot = [""] + [sahkotunnin_date] + [0] * (len(sahkonkulutus[0])-1)
-            current_date = sahkotunnin_date
-            paivan_tiedot[0] = VIIKONPAIVAT[current_date.weekday()]
-        for i, obj in enumerate(sahkotunti[1:], start=1):
-            paivan_tiedot[i+1] += obj
-    viikon_tiedot.append(paivan_tiedot)
+    #sahkonkulutus rivin formaatti == [datetime, k1,k2,k3, t1,t2,t3]
+    #paivan_tiedot on dictionary jossa avain on päivämäärä ja arvot ovat k1,k2,k3,t1,t2,t2
+    paivan_tiedot = {}
+    for row in sahkonkulutus:
+        dt = row[0].date()
+        values = row[1:]
 
-    #muutetaan datetime ja floatit tulostettavaan muotoon sekä kWh pyöristetään 2 merkitsevän tarkkuudella.
-    for paiva in viikon_tiedot:
-        paiva_str = paiva[1].strftime("%d-%m-%Y")
-        paiva_str = paiva_str.replace("-", ".")
-        paiva[1] = paiva_str
+        if dt not in paivan_tiedot:
+            paivan_tiedot[dt] = [0] * len(values)
         
-        for i, kwh in enumerate(paiva[2:], start=2):
-            paiva[i] = round(kwh, 2)
-            paiva[i] = str(paiva[i])
-            paiva[i] = paiva[i].replace(".", ",")
+        for i, val in enumerate(values):
+            paivan_tiedot[dt][i] += val
+
+    #laitetaan tiedot tulostettavaan muotoon.
+    #lisätään viikonpäivä ennen päivänäärää
+    #muutetaan pilkut pisteiksi
+    results = []
+    for dt in sorted(paivan_tiedot.keys()):
+        values = paivan_tiedot[dt]
+        viikonpaiva = VIIKONPAIVAT[dt.weekday()]
+        date_str = dt.strftime("%d.%m.%Y")
+        formatted_values = [format(round(v, 2), ".2f").replace(".",",")
+                             for v in values]
+        results.append([viikonpaiva, date_str] + formatted_values)
+ 
         
-    return viikon_tiedot
+    return results
 
 def tasoita_lista(nested: list):
     """Palautta tasoitetun listan sukeltaa sublistoihin tarvittaessa."""
@@ -121,6 +119,12 @@ def tasoita_sarakkeet(*listat: list):
                 lisattava_pituus = sarakkeiden_suurimmat_leveydet[i] - len(item)
                 lista[i] = item + padding * lisattava_pituus
 
+    for lista in tasoitetut_listat:
+        for i, item in enumerate(lista):
+            lista[i] = lista[i] + padding*3
+                
+    
+
     #Luodaan jakaja viiva laitetaan se oikeaaseen sijaintiin
     viiva = "-"
     jakaja_viiva = ""
@@ -136,6 +140,14 @@ def tasoita_sarakkeet(*listat: list):
 
     return tasoitetut_listat
 
+def tulosta_tiedot(tiedot:list[str,int]):
+
+    for row in tiedot:
+        if isinstance(row, list):
+            print(*row)
+        else:
+            print(row)
+    return
 
 def main():
     """
@@ -154,8 +166,8 @@ def main():
     tasoitetut_tiedot = []
     tasoitetut_tiedot = tasoita_sarakkeet(tulostus_otsikot, sahkon_kulutustiedot)
 
-    for rivi in tasoitetut_tiedot:
-        print(rivi)
+    tulosta_tiedot(tasoitetut_tiedot)
+
 
 if __name__ == "__main__":
     main()
