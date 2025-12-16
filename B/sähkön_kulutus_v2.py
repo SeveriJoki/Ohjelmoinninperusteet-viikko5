@@ -131,7 +131,7 @@ def tasoita_sarakkeet(*listat: list):
     viiva = "-"
     jakaja_viiva = ""
     for solu_pituus in sarakkeiden_suurimmat_leveydet:
-        jakaja_viiva += viiva * solu_pituus + viiva * 4
+        jakaja_viiva += viiva * solu_pituus + viiva * 3
 
     parametrien_pituudet = []
     for lista in listat:
