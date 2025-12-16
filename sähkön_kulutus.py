@@ -101,22 +101,23 @@ def tasoita_sarakkeet(*listat: list):
     Tämä varmistaa listojen tulostaessa olevan samoissa sijainneissa.
     luo myös kaikkien syötettyjen paremetrien väliin jakaja viivan.
     """
+    
     tasoitetut_listat = []
-
     for lista in listat:
         tasoitetut_listat.extend(tasoita_lista(lista))
+
 
     sarakkeiden_suurimmat_leveydet =  [0] * (len(tasoitetut_listat[0]))
     padding = " "
 
     for lista in tasoitetut_listat:
         for i, item in enumerate(lista):
-            if len(item) > sarakkeiden_suurimmat_leveydet[i]:
-                sarakkeiden_suurimmat_leveydet[i] = len(item)
+            if len(str(item)) > sarakkeiden_suurimmat_leveydet[i]:
+                sarakkeiden_suurimmat_leveydet[i] = len(str(item))
     for lista in tasoitetut_listat:
         for i,item in enumerate(lista):
-            if sarakkeiden_suurimmat_leveydet[i] > len(item):
-                lisattava_pituus = sarakkeiden_suurimmat_leveydet[i] - len(item)
+            if sarakkeiden_suurimmat_leveydet[i] > len(str(item)):
+                lisattava_pituus = sarakkeiden_suurimmat_leveydet[i] - len(str(item))
                 lista[i] = item + padding * lisattava_pituus
 
     for lista in tasoitetut_listat:
@@ -140,8 +141,9 @@ def tasoita_sarakkeet(*listat: list):
 
     return tasoitetut_listat
 
-def tulosta_tiedot(tiedot:list[str,int]):
+def tulosta_tiedot(tiedot:list[list[str]], otsikko:list[str] | None = None):
 
+    print(*otsikko)
     for row in tiedot:
         if isinstance(row, list):
             print(*row)
@@ -156,7 +158,8 @@ def main():
     Sarakkeiden leveyksien valmistelun jälkeen tulostetaan koko sähköviikko
     """
     sahkon_kulutustiedot = hae_sahkonkulutus("viikko42.csv")
-
+    x=1
+    otsikko = ["Viikon", x, "sähkön tuotanto ja kulutus"]
     tulostus_rivi1 = ["Päivä", "Pvm",    "Kulutus", "[kWh]", "",  "Tuotanto", "[kWh]",  ""]
     tulostus_rivi2 = ["",  "(pv.kk.vvvv)", "v1",    "v2",   "v3", "v1",      "v2",    "v3" ]
     tulostus_otsikot = []
@@ -166,7 +169,7 @@ def main():
     tasoitetut_tiedot = []
     tasoitetut_tiedot = tasoita_sarakkeet(tulostus_otsikot, sahkon_kulutustiedot)
 
-    tulosta_tiedot(tasoitetut_tiedot)
+    tulosta_tiedot(tasoitetut_tiedot, otsikko)
 
 
 if __name__ == "__main__":
