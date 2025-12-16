@@ -2,6 +2,7 @@
 # License: MIT
 
 from datetime import datetime
+import os
 
 VIIKONPAIVAT = {
     0:"Maanantai",
@@ -142,15 +143,26 @@ def tasoita_sarakkeet(*listat: list):
     return tasoitetut_listat
 
 
-def tulosta_tiedot(tiedot:list[list[str]], otsikko:list[str] | None = None):
+def luo_yhteenveto(output_file:str, tiedot:list[list[str]], otsikko:list[str] | None = None):
+    """
+    Docstring for luo_yhteenveto
+    Luo tiedoston joka sisältää pääotsikon ja tulostaa tiedot otsikon alle riveittäin
+    jokainen list[str] tiedot parametrissä on yksi rivi
+    """
+    for index in otsikko:
+        output_file.write(index)
 
-    print(*otsikko)
     for row in tiedot:
-        if isinstance(row, list):
-            print(*row)
-        else:
-            print(row)
+        output_file.write("\n")
+        for index in row:
+            output_file.write(index)
+
+    #tilaa loppuun
+    output_file.write("\n")
+    output_file.write("\n")
+
     return
+        
 
 def main():
     """
@@ -158,21 +170,30 @@ def main():
     Tehdään jokaisesta sarakkeesta yhtä leveitä, joka tekee lukemisesta paljon helpompaa.
     Sarakkeiden leveyksien valmistelun jälkeen tulostetaan koko sähköviikko
     """
+    tieto_otsikko1 = ["Päivä", "Pvm",    "Kulutus", "[kWh]", "",  "Tuotanto", "[kWh]",  ""]
+    tieto_otsikko2 = ["",  "(pv.kk.vvvv)", "v1",    "v2",   "v3", "v1",      "v2",    "v3" ]
+    tietojen_otsikot = []
+    tietojen_otsikot.append(tieto_otsikko1)
+    tietojen_otsikot.append(tieto_otsikko2)
 
+    files_to_read = []
 
-    sahkon_kulutustiedot = hae_sahkonkulutus("viikko42.csv")
-    x=1
-    otsikko = ["Viikon", x, "sähkön tuotanto ja kulutus"]
-    tulostus_rivi1 = ["Päivä", "Pvm",    "Kulutus", "[kWh]", "",  "Tuotanto", "[kWh]",  ""]
-    tulostus_rivi2 = ["",  "(pv.kk.vvvv)", "v1",    "v2",   "v3", "v1",      "v2",    "v3" ]
-    tulostus_otsikot = []
-    tulostus_otsikot.append(tulostus_rivi1)
-    tulostus_otsikot.append(tulostus_rivi2)
+    for name in os.listdir("."):
+        if name.endswith(".csv") and os.path.isfile(name):
+            files_to_read.append(name)
 
-    tasoitetut_tiedot = []
-    tasoitetut_tiedot = tasoita_sarakkeet(tulostus_otsikot, sahkon_kulutustiedot)
+    with open("Yhteenveto.txt", "w", encoding="utf-8") as output_file:
+        for file in files_to_read:
 
-    tulosta_tiedot(tasoitetut_tiedot, otsikko)
+            sahkon_kulutustiedot = hae_sahkonkulutus(file)
+            viikko_numero = file.replace("viikko", "")
+            viikko_numero = viikko_numero.replace(".csv", "")
+            viikon_otsikko = ["Viikon ", viikko_numero, " sähkön tuotanto ja kulutus"]
+
+            tasoitetut_tiedot = []
+            tasoitetut_tiedot = tasoita_sarakkeet(tietojen_otsikot, sahkon_kulutustiedot)
+
+            luo_yhteenveto(output_file, tasoitetut_tiedot, viikon_otsikko)
 
 
 if __name__ == "__main__":

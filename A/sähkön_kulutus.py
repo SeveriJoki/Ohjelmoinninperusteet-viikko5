@@ -159,17 +159,17 @@ def main():
     """
     sahkon_kulutustiedot = hae_sahkonkulutus("viikko42.csv")
     x=1
-    otsikko = ["Viikon", x, "sähkön tuotanto ja kulutus"]
+    tietojen_otsikko = ["Viikon", x, "sähkön tuotanto ja kulutus"]
     tulostus_rivi1 = ["Päivä", "Pvm",    "Kulutus", "[kWh]", "",  "Tuotanto", "[kWh]",  ""]
     tulostus_rivi2 = ["",  "(pv.kk.vvvv)", "v1",    "v2",   "v3", "v1",      "v2",    "v3" ]
-    tulostus_otsikot = []
-    tulostus_otsikot.append(tulostus_rivi1)
-    tulostus_otsikot.append(tulostus_rivi2)
+    tietojen_otsikot = []
+    tietojen_otsikot.append(tulostus_rivi1)
+    tietojen_otsikot.append(tulostus_rivi2)
 
     tasoitetut_tiedot = []
-    tasoitetut_tiedot = tasoita_sarakkeet(tulostus_otsikot, sahkon_kulutustiedot)
+    tasoitetut_tiedot = tasoita_sarakkeet(tietojen_otsikot, sahkon_kulutustiedot)
 
-    tulosta_tiedot(tasoitetut_tiedot, otsikko)
+    tulosta_tiedot(tasoitetut_tiedot, tietojen_otsikko)
 
 
 if __name__ == "__main__":
