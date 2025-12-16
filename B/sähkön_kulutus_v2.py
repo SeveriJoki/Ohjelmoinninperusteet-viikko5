@@ -181,19 +181,25 @@ def main():
     for name in os.listdir("."):
         if name.endswith(".csv") and os.path.isfile(name):
             files_to_read.append(name)
+    yhteenveto_file = "Yhteenveto.txt"
+    try:
+        with open(yhteenveto_file, "w", encoding="utf-8") as output_file:
+            for file in files_to_read:
 
-    with open("Yhteenveto.txt", "w", encoding="utf-8") as output_file:
-        for file in files_to_read:
+                sahkon_kulutustiedot = hae_sahkonkulutus(file)
+                viikko_numero = file.replace("viikko", "")
+                viikko_numero = viikko_numero.replace(".csv", "")
+                viikon_otsikko = ["Viikon ", viikko_numero, " sähkön tuotanto ja kulutus"]
 
-            sahkon_kulutustiedot = hae_sahkonkulutus(file)
-            viikko_numero = file.replace("viikko", "")
-            viikko_numero = viikko_numero.replace(".csv", "")
-            viikon_otsikko = ["Viikon ", viikko_numero, " sähkön tuotanto ja kulutus"]
+                tasoitetut_tiedot = []
+                tasoitetut_tiedot = tasoita_sarakkeet(tietojen_otsikot, sahkon_kulutustiedot)
 
-            tasoitetut_tiedot = []
-            tasoitetut_tiedot = tasoita_sarakkeet(tietojen_otsikot, sahkon_kulutustiedot)
+                luo_yhteenveto(output_file, tasoitetut_tiedot, viikon_otsikko)
+    except Exception as e:
+        print("Ongelma ilmeni tiedostoa luodessa:", e)
+    else:
+        print("Tiedosto luotu onnistuneesti:", os.path.abspath(yhteenveto_file))
 
-            luo_yhteenveto(output_file, tasoitetut_tiedot, viikon_otsikko)
 
 
 if __name__ == "__main__":
