@@ -147,7 +147,7 @@ def luo_yhteenveto(output_file:str, tiedot:list[list[str]], otsikko:list[str] | 
     """
     Docstring for luo_yhteenveto
     Luo tiedoston joka sisältää pääotsikon ja tulostaa tiedot otsikon alle riveittäin
-    jokainen list[str] tiedot parametrissä on yksi rivi
+    jokainen list[str] 'tiedot' parametrissä on yksi tulostettava rivi
     """
     for index in otsikko:
         output_file.write(index)
@@ -157,7 +157,7 @@ def luo_yhteenveto(output_file:str, tiedot:list[list[str]], otsikko:list[str] | 
         for index in row:
             output_file.write(index)
 
-    #tilaa loppuun
+    #tilaa loppuun seuraavaa tulostusta varten
     output_file.write("\n")
     output_file.write("\n")
 
